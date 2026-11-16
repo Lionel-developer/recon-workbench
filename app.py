@@ -21,6 +21,48 @@ def health():
     return {"status": "ok"}
 
 MAX_SCAN_BYTES = 1024 * 1024
+
+def extract_open_ports(host):
+    ports = []
+    for port in host.findall("ports/port"):
+        try:
+            number = int(port.get("portid", ""))
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail="A port has an invalid port number."
+            )
+        if not 0 <= number <= 65535:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid port number detected. Must be between 0 and 65535."
+            )
+        protocol = port.get("protocol")
+        if protocol not in ("tcp", "udp", "sctp"):
+            raise HTTPException(
+                status_code=400,
+                detail="Unsupported port protocol detected."
+            )
+        state = port.find("state")
+        if state is None or not state.get("state"):
+            raise HTTPException(
+                status_code=400,
+                detail="A port has no state."
+            )
+        if state.get("state") != "open":
+            continue
+        service = port.find("service")
+        details = service.attrib if service is not None else {}
+        
+        ports.append({
+            "port": number,
+            "protocol": protocol,
+            "service": details.get("name") or "unknown",
+            "product": details.get("product", ""),
+            "version": details.get("version", ""),
+        })
+    return ports
+
 def extract_hosts(root):
     hosts = []
     for host in root.findall("host"):
@@ -54,11 +96,10 @@ def extract_hosts(root):
             "status": (
                 status.get("state", "unknown")
                 if status is not None else "unknown"
-            )
+            ),
+            "ports": extract_open_ports(host)
         })
     return hosts
-        
-        
 
 @app.post("/api/scans/preview")
 async def preview_scan(request: Request):
@@ -78,7 +119,7 @@ async def preview_scan(request: Request):
         )
     try:
         root = fromstring(bytes(body),
-                          forbid_dtd=True,
+                          forbid_dtd=False,
                           forbid_entities=True,
                           forbid_external=True)
     except DefusedXmlException:

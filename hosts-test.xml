@@ -3,7 +3,21 @@
         <status state="up"/>
         <address addr="00:11:22:33:44:55" addrtype="mac"/>
         <address addr="10.10.10.10" addrtype="ipv4"/>
+
+        <ports>
+            <port protocol="tcp" portid="22">
+                <state state="open"/>
+                <service name="ssh" product="OpenSSH" version="9.6"/>
+            </port>
+            <port protocol="tcp" portid="80">
+                <state state="closed"/>
+            </port>
+            <port protocol="tcp" portid="443">
+                <state state="open|filtered"/>
+            </port>
+        </ports>
     </host>
+
     <host>
         <status state="down"/>
         <address addr="2001:db8::10" addrtype="ipv6"/>
