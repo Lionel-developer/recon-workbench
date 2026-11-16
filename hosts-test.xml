@@ -1,0 +1,11 @@
+<nmaprun scanner="nmap">
+    <host>
+        <status state="up"/>
+        <address addr="00:11:22:33:44:55" addrtype="mac"/>
+        <address addr="10.10.10.10" addrtype="ipv4"/>
+    </host>
+    <host>
+        <status state="down"/>
+        <address addr="2001:db8::10" addrtype="ipv6"/>
+    </host>
+</nmaprun>
