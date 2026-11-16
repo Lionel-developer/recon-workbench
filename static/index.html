@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recon Workbench</title>
+    <script src="/static/app.js" defer></script>
+</head>
+<body>
+    <h1>Recon Workbench</h1>
+
+    <button id="check-health" type="button">Check API</button>
+    <p id="status" role="status">Waiting for a check.</p>
+    <h2>Choose an Nmap scan</h2>
+    <label for="scan-file">Nmap XML file:</label>
+    <input id="scan-file" type="file" accept=".xml">
+    <p id="file-info" role="status">No file selected.</p>
+    <button id="upload-scan" type="button">Upload Scan</button>
+    <p id="upload-status" role="status">Waiting for an upload.</p>
+</body>
+</html>
